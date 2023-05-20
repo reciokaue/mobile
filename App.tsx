@@ -16,6 +16,9 @@ import NLWLogo from './src/assets/nlw-spacetime-logo.svg'
 
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
 import { api } from './src/services/api'
+
+import * as SecureStore from 'expo-secure-store'
+
 const discovery = {
   authorizationEndpoint: 'https://github.com/login/oauth/authorize',
   tokenEndpoint: 'https://github.com/login/oauth/access_token',
@@ -31,7 +34,7 @@ export default function App() {
     Roboto_700Bold,
     BaiJamjuree_700Bold,
   })
-  const [request, response, signInWithGithub] = useAuthRequest(
+  const [, response, signInWithGithub] = useAuthRequest(
     {
       clientId: 'c262b9a2aa19775c6e20',
       scopes: ['identity'],
@@ -41,7 +44,6 @@ export default function App() {
     },
     discovery,
   )
-  console.log('🚀 ~ file: App.tsx:43 ~ App ~ request:', request)
 
   useEffect(() => {
     if (response?.type === 'success') {
@@ -54,11 +56,13 @@ export default function App() {
         .then((response) => {
           const { token } = response.data
 
-          console.log(token)
+          SecureStore.setItemAsync('token', token)
+        })
+        .catch((err) => {
+          console.log(err)
         })
     }
   }, [response])
-  console.log('🚀 ~ file: App.tsx:44 ~ App ~ request:', response)
 
   if (!hasLoadedFonts) return null
 
